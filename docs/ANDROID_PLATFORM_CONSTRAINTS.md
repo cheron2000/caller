@@ -1,6 +1,6 @@
 # Android Platform Constraints and Feasibility
 
-This document records constraints that must shape NOVA AI's design. Validate exact behavior against the Android API level and Vivo Funtouch OS version on the target device.
+This document records constraints that must shape Callvanta's design. Validate exact behavior against the Android API level and Vivo Funtouch OS version on the target device.
 
 ## 1. Call screening is not call answering
 
