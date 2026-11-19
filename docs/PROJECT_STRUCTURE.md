@@ -7,7 +7,7 @@ caller/
 ├── app/
 │   └── src/
 │       └── main/
-│           ├── java/com/nova/ai/
+│           ├── java/com/callvanta/ai/
 │           │   ├── ui/
 │           │   │   ├── dashboard/
 │           │   │   ├── calls/
