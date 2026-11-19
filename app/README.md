@@ -1,6 +1,6 @@
 # Android application module — planned
 
-Reserved for the NOVA AI Android client.
+Reserved for the Callvanta Android client.
 
 Planned stack: Kotlin, Jetpack Compose, Android Telecom APIs, and Room.
 
