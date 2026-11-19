@@ -1,6 +1,6 @@
-# NOVA AI — Android Call Assistant
+# Callvanta — Android Call Assistant
 
-NOVA AI is a planned Android application for assisting with incoming cellular (SIM) calls. The initial release focuses on caller context, user-controlled call screening, call records, and a foundation for AI-assisted call handling where Android and device capabilities permit it.
+Callvanta is a planned Android application for assisting with incoming cellular (SIM) calls. The initial release focuses on caller context, user-controlled call screening, call records, and a foundation for AI-assisted call handling where Android and device capabilities permit it.
 
 > **Current repository state:** planning and architecture scaffold only. No application source code, Gradle configuration, backend implementation, or build workflow has been added yet.
 
