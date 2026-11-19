@@ -7,7 +7,7 @@ Only the project owner or coordinator should assign/reassign owners. Each task h
 | CV-001 | Review product plan and identify unresolved requirements | Manus | Ready | — | Findings documented with evidence and open questions |
 | CV-002 | Review Android Telecom feasibility for Vivo Y39 | Manus | Ready | — | API/OEM constraints, sources, test plan, go/no-go recommendation |
 | CV-003 | Review architecture for consistency and maintainability | Claude | Ready | — | Architecture review with risks and proposed changes |
-| CV-004 | Establish cross-agent collaboration workflow | ChatGPT | In progress | — | Shared instructions, skills, role rules, and handoff process committed |
+| CV-004 | Establish cross-agent collaboration workflow | ChatGPT | Done | main | Shared instructions, seven skills, role rules, and handoff process committed |
 | CV-005 | Approve MVP scope and platform feasibility | Project owner | Blocked on CV-001/CV-002/CV-003 | — | Owner records approved decisions in DECISIONS.md |
 
 ## Status vocabulary
