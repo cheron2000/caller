@@ -1,4 +1,4 @@
-# NOVA AI — Architecture
+# Callvanta — Architecture
 
 ## 1. Architectural principles
 
