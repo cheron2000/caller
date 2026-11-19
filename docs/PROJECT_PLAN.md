@@ -1,4 +1,4 @@
-# NOVA AI — Project Plan
+# Callvanta — Project Plan
 
 ## 1. Vision
 
@@ -6,7 +6,7 @@ Build an Android call-assistant application that helps the device owner understa
 
 ## 2. Problem statement
 
-Users receive calls from unknown numbers and often need to interrupt what they are doing to understand who is calling and why. NOVA AI aims to provide caller context, configurable screening, and concise call records. More advanced voice interaction is a research track because Android tightly controls cellular-call audio.
+Users receive calls from unknown numbers and often need to interrupt what they are doing to understand who is calling and why. Callvanta aims to provide caller context, configurable screening, and concise call records. More advanced voice interaction is a research track because Android tightly controls cellular-call audio.
 
 ## 3. Target platform and operating assumptions
 
