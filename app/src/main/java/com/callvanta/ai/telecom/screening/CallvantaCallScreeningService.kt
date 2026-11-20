@@ -3,6 +3,7 @@ package com.callvanta.ai.telecom.screening
 import android.net.Uri
 import android.telecom.Call
 import android.telecom.CallScreeningService
+import com.callvanta.ai.CallvantaApplication
 import com.callvanta.ai.domain.screening.ScreeningAction
 import com.callvanta.ai.domain.screening.ScreeningPolicy
 
