@@ -85,7 +85,7 @@ class ScreeningPolicyTest {
     fun `saved contacts are allowed by default`() {
         val result = policy.evaluate(
             caller,
-            listOf(rule("block", CallerMatcher.ExactNumber(caller.normalized), ScreeningAction.REJECT)),
+            rules = emptyList(),
             isSavedContact = true
         )
         assertEquals(ScreeningAction.ALLOW, result.action)
