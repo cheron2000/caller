@@ -15,7 +15,7 @@ ChatGPT is the sole active AI agent. The project owner retains final authority o
 | CV-009 | Implement capability onboarding and call-screening role state | ChatGPT | Done | main | User-triggered role request and accurate granted/denied/unavailable/revoked UI |
 | CV-010 | Implement and test pure Kotlin screening policy | ChatGPT | Done | main | Deterministic rules and unit tests for approved defaults and edge cases |
 | CV-011 | Implement Android CallScreeningService adapter | ChatGPT | Done | main | Registered service, incoming-only handling, supported responses, fail-open mapping, and CI verification; device test remains outstanding |
-| CV-012 | Implement persistent local screening rules and rule-management UI | ChatGPT | In progress | main | Add/edit/enable/disable/delete rules; persist locally; service uses a preloaded in-memory snapshot; deterministic policy tests and CI pass |
+| CV-012 | Implement persistent local screening rules and rule-management UI | ChatGPT | In progress | main | Add/edit/enable/disable/delete rules; persist locally; normalized number matching and safe validation; device test and CI pass |
 
 ## Current handoff
 - Manus CV-001/CV-002 findings, ChatGPT CV-003 review, and owner decisions are preserved on `main`.
@@ -24,7 +24,7 @@ ChatGPT is the sole active AI agent. The project owner retains final authority o
 - CV-010 policy engine and tests are complete.
 - CV-011 service adapter is implemented and CI-verified. Device validation on the Vivo Y39 remains outstanding.
 - CV-007 is resolved: the owner approved 30-day event retention and disabled cloud backup (D-023). The retention rule applies when screening-event persistence is added; no audio or transcripts are stored.
-- CV-012 is in progress: persistent local rules with a preloaded in-memory snapshot so the screening callback does not perform database I/O.
+- CV-012 is in progress: persistent local rules use a preloaded in-memory snapshot. Number normalization, prefix validation, safer Allow default, and unsupported-category UI warnings are now implemented; verify CI and test an unsaved caller on the Vivo Y39.
 - Android does not deliver saved-contact calls without `READ_CONTACTS`, nor restricted/unknown/unavailable/payphone presentations to third-party screening services. These constraints are documented in `app/src/main/java/com/callvanta/ai/telecom/README.md`.
 - The user's first device test confirmed the role is enabled and the call rang normally. This is consistent with the current empty-rule implementation; it does not yet verify rule-based silence/rejection.
 
