@@ -74,9 +74,6 @@ class ScreeningPolicy {
         if (rules == null) {
             return allow("Policy data unavailable; fail open")
         }
-        if (isSavedContact) {
-            return allow("Saved contact allowed by default")
-        }
         if (caller == CallerIdentity.Missing) {
             return allow("Caller identity metadata missing; fail open")
         }
@@ -92,7 +89,7 @@ class ScreeningPolicy {
             .firstOrNull()
 
         return if (matchingRule == null) {
-            allow("No rule matched; default allow")
+            allow(if (isSavedContact) "Saved contact allowed by default" else "No rule matched; default allow")
         } else {
             ScreeningDecision(
                 action = matchingRule.action,
