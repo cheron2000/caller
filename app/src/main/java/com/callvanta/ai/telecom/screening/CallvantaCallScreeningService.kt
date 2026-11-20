@@ -25,7 +25,7 @@ class CallvantaCallScreeningService : CallScreeningService() {
                 scheme = handle?.scheme,
                 schemeSpecificPart = handle?.schemeSpecificPart
             )
-            val decision = policy.evaluate(caller = caller, rules = emptyList())
+            val decision = policy.evaluate(caller = caller, rules = CallvantaApplication.rulesSnapshot())
             responseFor(decision.action)
         } catch (_: Exception) {
             allowResponse()
