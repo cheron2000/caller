@@ -172,13 +172,13 @@ private fun CallvantaHome(
                     action = ScreeningAction.REJECT; validation = null
                 }) { Text("Cancel edit") }
             }
-            Text("Your rules (\${rules.size})", style = MaterialTheme.typography.titleLarge)
+            Text("Your rules (${rules.size})", style = MaterialTheme.typography.titleLarge)
             if (rules.isEmpty()) Text("No rules yet. Add a number or withheld/unknown caller rule above.")
             rules.forEach { rule ->
                 Card {
                     Column(Modifier.fillMaxWidth().padding(12.dp), verticalArrangement = Arrangement.spacedBy(7.dp)) {
                         Text(rule.title(), style = MaterialTheme.typography.titleMedium)
-                        Text("Action: \${rule.action.label()}")
+                        Text("Action: ${rule.action.label()}")
                         Row(verticalAlignment = Alignment.CenterVertically) {
                             Text("Enabled", modifier = Modifier.weight(1f))
                             Switch(checked = rule.enabled, onCheckedChange = { onToggleRule(rule.id, it) })
@@ -222,6 +222,6 @@ private fun ScreeningAction.label() = when (this) {
 }
 private fun ScreeningRule.title() = when (val value = matcher) {
     is CallerMatcher.ExactNumber -> value.normalized
-    is CallerMatcher.NumberPrefix -> "Starts with \${value.prefix}"
+    is CallerMatcher.NumberPrefix -> "Starts with ${value.prefix}"
     CallerMatcher.WithheldOrUnknown -> "Withheld or unknown caller ID"
 }
