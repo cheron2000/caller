@@ -18,7 +18,7 @@ import com.callvanta.ai.domain.screening.*
 import java.util.UUID
 
 private enum class ScreeningRoleState { UNAVAILABLE, NOT_ENABLED, GRANTED, DENIED, REVOKED }
-private enum class RuleType { EXACT, PREFIX, WITHHELD_UNKNOWN }
+private enum class RuleType { EXACT, PREFIX }
 
 class MainActivity : ComponentActivity() {
     private var roleState by mutableStateOf(ScreeningRoleState.NOT_ENABLED)
@@ -44,11 +44,18 @@ class MainActivity : ComponentActivity() {
 
     override fun onResume() { super.onResume(); refreshRoleState() }
 
-    private fun saveRule(existingId: String?, type: RuleType, value: String, action: ScreeningAction) {
+    private fun saveRule(existingId: String?, type: RuleType, value: String, action: ScreeningAction): String? {
+        val normalized = when (type) {
+            RuleType.EXACT -> NumberNormalizer.normalizeExact(value)
+            RuleType.PREFIX -> NumberNormalizer.normalizePrefix(value)
+        } ?: return if (type == RuleType.EXACT) {
+            "Enter a valid phone number (10-digit Indian number or international +countrycode number)."
+        } else {
+            "Enter a prefix with at least 6 significant digits. A country code alone is too broad."
+        }
         val matcher = when (type) {
-            RuleType.EXACT -> CallerMatcher.ExactNumber(value.trim())
-            RuleType.PREFIX -> CallerMatcher.NumberPrefix(value.trim())
-            RuleType.WITHHELD_UNKNOWN -> CallerMatcher.WithheldOrUnknown
+            RuleType.EXACT -> CallerMatcher.ExactNumber(normalized)
+            RuleType.PREFIX -> CallerMatcher.NumberPrefix(normalized)
         }
         val old = rules.firstOrNull { it.id == existingId }
         val updated = if (old == null) {
@@ -56,6 +63,7 @@ class MainActivity : ComponentActivity() {
                 (rules.maxOfOrNull { it.creationOrder } ?: 0L) + 1L, true, matcher, action)
         } else rules.map { if (it.id == existingId) it.copy(matcher = matcher, action = action) else it }
         publishRules(updated)
+        return null
     }
 
     private fun toggleRule(id: String, enabled: Boolean) =
@@ -99,14 +107,14 @@ private fun CallvantaHome(
     roleState: ScreeningRoleState,
     rules: List<ScreeningRule>,
     onEnableScreening: () -> Unit,
-    onSaveRule: (String?, RuleType, String, ScreeningAction) -> Unit,
+    onSaveRule: (String?, RuleType, String, ScreeningAction) -> String?,
     onToggleRule: (String, Boolean) -> Unit,
     onDeleteRule: (String) -> Unit
 ) {
     var selectedId by remember { mutableStateOf<String?>(null) }
     var ruleType by remember { mutableStateOf(RuleType.EXACT) }
     var number by remember { mutableStateOf("") }
-    var action by remember { mutableStateOf(ScreeningAction.REJECT) }
+    var action by remember { mutableStateOf(ScreeningAction.ALLOW) }
     var validation by remember { mutableStateOf<String?>(null) }
 
     val status = when (roleState) {
@@ -135,20 +143,25 @@ private fun CallvantaHome(
             }
             Text("Screening rules", style = MaterialTheme.typography.titleLarge)
             Text("Rules stay on this device. If no rule matches, the call is allowed.")
+            Text(
+                "Android currently delivers screening callbacks only for numbers outside your contacts. " +
+                    "Saved-contact calls, withheld/private IDs, unknown presentations and payphones cannot be matched by this version.",
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant
+            )
             Text("Caller type", style = MaterialTheme.typography.titleSmall)
-            Row(horizontalArrangement = Arrangement.spacedBy(5.dp)) {
+            Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                 RuleType.entries.forEach { type ->
-                    if (ruleType == type) Button(onClick = { ruleType = type; number = "" }) { Text(type.label()) }
-                    else OutlinedButton(onClick = { ruleType = type; number = "" }) { Text(type.label()) }
+                    if (ruleType == type) Button(onClick = { ruleType = type; number = ""; validation = null }) { Text(type.label()) }
+                    else OutlinedButton(onClick = { ruleType = type; number = ""; validation = null }) { Text(type.label()) }
                 }
             }
-            if (ruleType != RuleType.WITHHELD_UNKNOWN) {
-                OutlinedTextField(
-                    value = number, onValueChange = { number = it },
-                    label = { Text(if (ruleType == RuleType.EXACT) "Phone number" else "Number prefix") },
-                    modifier = Modifier.fillMaxWidth(), singleLine = true
-                )
-            }
+            OutlinedTextField(
+                value = number, onValueChange = { number = it; validation = null },
+                label = { Text(if (ruleType == RuleType.EXACT) "Phone number" else "Number prefix") },
+                placeholder = { Text(if (ruleType == RuleType.EXACT) "+91 98765 43210" else "987654") },
+                modifier = Modifier.fillMaxWidth(), singleLine = true
+            )
             Text("Action", style = MaterialTheme.typography.titleSmall)
             Row(horizontalArrangement = Arrangement.spacedBy(5.dp)) {
                 ScreeningAction.entries.forEach { candidate ->
@@ -159,40 +172,52 @@ private fun CallvantaHome(
             validation?.let { Text(it, color = MaterialTheme.colorScheme.error) }
             Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                 Button(onClick = {
-                    if (ruleType != RuleType.WITHHELD_UNKNOWN && number.trim().isEmpty()) {
-                        validation = "Enter a phone number or prefix."
-                    } else {
-                        onSaveRule(selectedId, ruleType, number, action)
+                    val error = onSaveRule(selectedId, ruleType, number, action)
+                    if (error != null) validation = error
+                    else {
                         selectedId = null; number = ""; ruleType = RuleType.EXACT
-                        action = ScreeningAction.REJECT; validation = null
+                        action = ScreeningAction.ALLOW; validation = null
                     }
                 }) { Text(if (selectedId == null) "Add rule" else "Save changes") }
                 if (selectedId != null) OutlinedButton(onClick = {
                     selectedId = null; number = ""; ruleType = RuleType.EXACT
-                    action = ScreeningAction.REJECT; validation = null
+                    action = ScreeningAction.ALLOW; validation = null
                 }) { Text("Cancel edit") }
             }
             Text("Your rules (${rules.size})", style = MaterialTheme.typography.titleLarge)
-            if (rules.isEmpty()) Text("No rules yet. Add a number or withheld/unknown caller rule above.")
+            if (rules.isEmpty()) Text("No rules yet. Add an exact number or a specific prefix.")
             rules.forEach { rule ->
                 Card {
                     Column(Modifier.fillMaxWidth().padding(12.dp), verticalArrangement = Arrangement.spacedBy(7.dp)) {
                         Text(rule.title(), style = MaterialTheme.typography.titleMedium)
                         Text("Action: ${rule.action.label()}")
+                        if (rule.matcher == CallerMatcher.WithheldOrUnknown) {
+                            Text(
+                                "Unsupported by Android screening on this device configuration. Delete this legacy rule; it cannot match calls.",
+                                color = MaterialTheme.colorScheme.error,
+                                style = MaterialTheme.typography.bodySmall
+                            )
+                        }
                         Row(verticalAlignment = Alignment.CenterVertically) {
                             Text("Enabled", modifier = Modifier.weight(1f))
-                            Switch(checked = rule.enabled, onCheckedChange = { onToggleRule(rule.id, it) })
+                            Switch(
+                                checked = rule.enabled,
+                                enabled = rule.matcher != CallerMatcher.WithheldOrUnknown,
+                                onCheckedChange = { onToggleRule(rule.id, it) }
+                            )
                         }
                         Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                            OutlinedButton(onClick = {
-                                selectedId = rule.id; action = rule.action
-                                when (val matcher = rule.matcher) {
-                                    is CallerMatcher.ExactNumber -> { ruleType = RuleType.EXACT; number = matcher.normalized }
-                                    is CallerMatcher.NumberPrefix -> { ruleType = RuleType.PREFIX; number = matcher.prefix }
-                                    CallerMatcher.WithheldOrUnknown -> { ruleType = RuleType.WITHHELD_UNKNOWN; number = "" }
-                                }
-                                validation = null
-                            }) { Text("Edit") }
+                            if (rule.matcher != CallerMatcher.WithheldOrUnknown) {
+                                OutlinedButton(onClick = {
+                                    selectedId = rule.id; action = rule.action
+                                    when (val matcher = rule.matcher) {
+                                        is CallerMatcher.ExactNumber -> { ruleType = RuleType.EXACT; number = matcher.normalized }
+                                        is CallerMatcher.NumberPrefix -> { ruleType = RuleType.PREFIX; number = matcher.prefix }
+                                        CallerMatcher.WithheldOrUnknown -> Unit
+                                    }
+                                    validation = null
+                                }) { Text("Edit") }
+                            }
                             OutlinedButton(onClick = {
                                 onDeleteRule(rule.id)
                                 if (selectedId == rule.id) selectedId = null
@@ -202,7 +227,7 @@ private fun CallvantaHome(
                 }
             }
             Text(
-                "No call audio is accessed. Screening is local. Activity retention is 30 days; cloud backup is disabled.",
+                "No call audio is accessed. Screening is local. Event retention policy: 30 days; cloud backup is disabled.",
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant
             )
@@ -213,7 +238,6 @@ private fun CallvantaHome(
 private fun RuleType.label() = when (this) {
     RuleType.EXACT -> "Exact"
     RuleType.PREFIX -> "Prefix"
-    RuleType.WITHHELD_UNKNOWN -> "Withheld / unknown"
 }
 private fun ScreeningAction.label() = when (this) {
     ScreeningAction.ALLOW -> "Allow"
@@ -223,5 +247,5 @@ private fun ScreeningAction.label() = when (this) {
 private fun ScreeningRule.title() = when (val value = matcher) {
     is CallerMatcher.ExactNumber -> value.normalized
     is CallerMatcher.NumberPrefix -> "Starts with ${value.prefix}"
-    CallerMatcher.WithheldOrUnknown -> "Withheld or unknown caller ID"
+    CallerMatcher.WithheldOrUnknown -> "Withheld / unknown (unsupported)"
 }
