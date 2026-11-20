@@ -11,9 +11,9 @@ ChatGPT is the sole active AI agent. The project owner retains final authority o
 | CV-005 | Approve MVP scope and platform feasibility | Project owner | Done | main | Owner-approved defaults recorded in `DECISIONS.md` |
 | CV-006 | Prepare implementation-ready Android foundation plan | ChatGPT | Done | main | `CV-006_IMPLEMENTATION_BLUEPRINT.md` defines toolchain, package boundaries, slices, CI, and verification gates |
 | CV-007 | Resolve persistence retention and backup specifics | ChatGPT | Blocked | main | Recommend exact retention default and backup policy; obtain owner approval before persistence ships |
-| CV-008 | Create Android app shell and remote debug build | ChatGPT | Ready | main | Buildable Compose app, minimal manifest, GitHub Actions build, APK artifact, verified CI result |
-| CV-009 | Implement capability onboarding and call-screening role state | ChatGPT | Blocked on CV-008 | main | User-triggered role request and accurate granted/denied/unavailable/revoked UI |
-| CV-010 | Implement and test pure Kotlin screening policy | ChatGPT | Blocked on CV-008 | main | Deterministic rules and unit tests for approved defaults and edge cases |
+| CV-008 | Create Android app shell and remote debug build | ChatGPT | Done | main | Buildable Compose app, minimal manifest, GitHub Actions build, APK artifact, verified CI result |
+| CV-009 | Implement capability onboarding and call-screening role state | ChatGPT | In progress | main | User-triggered role request and accurate granted/denied/unavailable/revoked UI |
+| CV-010 | Implement and test pure Kotlin screening policy | ChatGPT | Ready | main | Deterministic rules and unit tests for approved defaults and edge cases |
 | CV-011 | Implement Android CallScreeningService adapter | ChatGPT | Blocked on CV-009/CV-010 | main | Bounded local callback and supported response, with no network/LLM dependency |
 
 ## Current handoff
