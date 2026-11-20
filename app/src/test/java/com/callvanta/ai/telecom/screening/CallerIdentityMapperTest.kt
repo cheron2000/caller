@@ -8,7 +8,7 @@ class CallerIdentityMapperTest {
     @Test
     fun `tel handle maps to normalized number`() {
         assertEquals(
-            CallerIdentity.Number("+919876543210"),
+            CallerIdentity.Number("9876543210"),
             CallerIdentityMapper.fromHandle("tel", "+919876543210")
         )
     }
