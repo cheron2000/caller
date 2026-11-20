@@ -1,65 +1,50 @@
 # Callvanta — Implementation Roadmap
 
-The roadmap is staged so that the project can deliver useful supported functionality without depending on an unverified cellular-audio capability.
+The roadmap delivers supported functionality without depending on an unverified cellular-audio capability.
 
 ## Phase 0 — Product and platform validation
+- [x] Review product requirements and unresolved decisions.
+- [x] Review Android Telecom constraints and document Vivo Y39 validation gaps.
+- [x] Approve initial MVP scope and record decisions.
+- [ ] Confirm exact target device model, Android API level, Funtouch OS build, region, SIM configuration, and carrier.
+- [ ] Run the physical-device role/callback validation after an installable build exists.
 
-- [ ] Confirm target device model, Android API level, and Funtouch OS version.
-- [ ] Review Android Telecom role and service requirements.
-- [ ] Verify whether the app can be selected as default dialer on the target device.
-- [ ] Write a privacy/data-flow inventory.
-- [ ] Define MVP acceptance tests.
-- [ ] Record a go/no-go decision for live AI call audio.
-
-**Exit condition:** approved scope and a documented platform feasibility report.
+**Exit condition:** approved scope and documented platform feasibility. Product scope is approved; physical-device validation remains outstanding.
 
 ## Phase 1 — Android foundation
-
+- [x] Define the implementation blueprint and initial toolchain.
 - [ ] Create the Android Gradle project and app module.
 - [ ] Establish Kotlin and Jetpack Compose conventions.
 - [ ] Add app navigation and dashboard.
-- [ ] Add onboarding, permission explanations, and capability status.
-- [ ] Define domain models and repository interfaces.
-- [ ] Set up local persistence.
-- [ ] Add basic tests and a cloud build workflow.
+- [ ] Add onboarding and capability status.
+- [ ] Define pure domain models and screening policy.
+- [ ] Add unit tests for policy behavior.
+- [ ] Add a remote debug build workflow and APK artifact.
+- [ ] Add local persistence only after retention and backup decisions are finalized.
 
-**Exit condition:** installable app shell with no unsupported call handling claims.
+**Exit condition:** installable app shell with a successful remote build and no unsupported call-handling claims.
 
-## Phase 2 — Cellular call awareness and screening
-
+## Phase 2 — Cellular call screening
 - [ ] Integrate supported call-screening service.
-- [ ] Add local screening preferences.
+- [ ] Add local screening preferences and deterministic rules.
 - [ ] Handle missing/unknown caller metadata.
-- [ ] Persist screening outcomes and call records where permitted.
+- [ ] Persist observed screening events only after retention and deletion rules are approved.
 - [ ] Validate service timing and lifecycle on Vivo Y39.
-- [ ] Test permission denial, role changes, reboot, and background behavior.
+- [ ] Test role denial/revocation, reboot, and background behavior.
 
-**Exit condition:** reliable, tested call screening within Android's contract.
+**Exit condition:** reliable screening within Android's contract, demonstrated on the target device.
 
-## Phase 3 — Default dialer evaluation
+## Phase 3 — Deferred platform evaluation
+- [ ] Reconsider default-dialer integration only if product owner changes scope.
+- [ ] Reconsider contacts integration only after permission and data-use review.
+- [ ] Do not pursue live two-way cellular AI without documented supported audio path and policy/legal review.
 
-- [ ] Implement the required default-dialer role flow if product scope requires it.
-- [ ] Evaluate `InCallService` lifecycle and call controls.
-- [ ] Build a compliant in-call UI.
-- [ ] Test incoming and outgoing call scenarios on the target device.
-- [ ] Document OEM-specific limitations.
-
-**Exit condition:** stable in-call integration, or a documented decision to omit it.
-
-## Phase 4 — AI and speech features (conditional)
-
-- [ ] Establish a provider-neutral AI service contract.
-- [ ] Build optional backend authentication and request validation.
-- [ ] Configure provider credentials only in backend secrets.
-- [ ] Add permitted text summarization and caller-purpose extraction.
-- [ ] Add speech recognition/synthesis only for supported audio sources.
-- [ ] Add transparent disclosure, consent, and deletion controls.
-- [ ] Revisit live two-way conversation only if Phase 0 feasibility criteria are met.
-
-**Exit condition:** tested AI assistance that uses only permitted inputs and has safe failure behavior.
+## Phase 4 — Deferred AI/backend track
+- [ ] Reassess a provider-neutral AI service contract only when an approved input source and user-facing feature exist.
+- [ ] If approved, implement backend authentication, rate limits, validation, data minimization, and server-side secrets.
+- [ ] Add permitted text summarization only from data Callvanta is allowed to process.
 
 ## Phase 5 — Hardening and release
-
 - [ ] Security and privacy review.
 - [ ] Accessibility and usability review.
 - [ ] Device compatibility testing.
@@ -68,6 +53,10 @@ The roadmap is staged so that the project can deliver useful supported functiona
 - [ ] User-facing limitations and privacy documentation.
 - [ ] Versioned release and rollback plan.
 
-## Deferred track — VoIP applications
-
-WhatsApp and other third-party VoIP integrations are out of the initial scope. Reassess separately after the cellular MVP is stable, using only supported integration points and without claiming call interception or answering capabilities that the platform does not expose.
+## Explicit non-goals for the first milestone
+- WhatsApp and other VoIP integrations.
+- Default dialer replacement and custom in-call UI.
+- Automated AI answering over ordinary cellular calls.
+- Call audio recording, transcription, or transcript storage.
+- Backend/LLM dependency for call screening.
+- Full device call-history replacement.
