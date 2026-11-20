@@ -13,15 +13,17 @@ ChatGPT is the sole active AI agent. The project owner retains final authority o
 | CV-007 | Resolve persistence retention and backup specifics | ChatGPT | Blocked | main | Recommend exact retention default and backup policy; obtain owner approval before persistence ships |
 | CV-008 | Create Android app shell and remote debug build | ChatGPT | Done | main | Buildable Compose app, minimal manifest, GitHub Actions build, APK artifact, verified CI result |
 | CV-009 | Implement capability onboarding and call-screening role state | ChatGPT | Done | main | User-triggered role request and accurate granted/denied/unavailable/revoked UI |
-| CV-010 | Implement and test pure Kotlin screening policy | ChatGPT | In progress | main | Deterministic rules and unit tests for approved defaults and edge cases |
-| CV-011 | Implement Android CallScreeningService adapter | ChatGPT | Blocked on CV-009/CV-010 | main | Bounded local callback and supported response, with no network/LLM dependency |
+| CV-010 | Implement and test pure Kotlin screening policy | ChatGPT | Done | main | Deterministic rules and unit tests for approved defaults and edge cases |
+| CV-011 | Implement Android CallScreeningService adapter | ChatGPT | In progress | main | Registered service, incoming-only handling, supported responses, fail-open mapping, and CI verification |
 
 ## Current handoff
 - Manus CV-001/CV-002 findings, ChatGPT CV-003 review, and owner decisions are preserved on `main`.
 - Owner-approved MVP scope is recorded in `DECISIONS.md`.
 - CV-006 implementation blueprint is recorded in `CV-006_IMPLEMENTATION_BLUEPRINT.md`.
-- No Android build, automated app test, emulator test, or Vivo Y39 device test has yet been run.
-- Next: CV-008 app shell and remote build. Persistence remains blocked until CV-007 is resolved.
+- CV-010 policy engine and tests are complete.
+- CV-011 now has a manifest-registered Android service adapter. It currently evaluates an empty in-memory rule set and therefore allows all incoming calls until rule configuration and persistence are implemented.
+- Android does not deliver saved-contact calls without `READ_CONTACTS`, nor restricted/unknown/unavailable/payphone presentations to third-party screening services. These constraints are documented in `app/src/main/java/com/callvanta/ai/telecom/README.md`.
+- No Android device test or Vivo Y39 test has been completed. Persistence remains blocked until CV-007 is resolved.
 
 ## Assignment rule
 Only ChatGPT is active unless the project owner explicitly reactivates another agent. Keep direct commits focused and never claim unperformed verification.
