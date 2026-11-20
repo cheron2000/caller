@@ -8,16 +8,14 @@ import com.callvanta.ai.domain.screening.ScreeningAction
 import com.callvanta.ai.domain.screening.ScreeningPolicy
 
 /**
- * Minimal Android adapter for the local screening policy.
- *
- * The first milestone deliberately has no persisted rules yet, so this adapter
- * evaluates an empty in-memory rule set and allows calls by default. Keep this
- * callback synchronous, bounded, and free of I/O to satisfy Telecom's deadline.
+ * Local screening adapter. Incoming calls are evaluated synchronously against
+ * the immutable rule snapshot loaded by the Application; failures fail open.
  */
 class CallvantaCallScreeningService : CallScreeningService() {
     private val policy = ScreeningPolicy()
 
     override fun onScreenCall(callDetails: Call.Details) {
+        // Android documents that respondToCall has no effect for outgoing calls.
         if (callDetails.callDirection != Call.Details.DIRECTION_INCOMING) return
 
         val response = try {
