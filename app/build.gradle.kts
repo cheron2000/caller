@@ -5,7 +5,7 @@ plugins {
 
 android {
     namespace = "com.callvanta.ai"
-    compileSdk = 36
+    compileSdk = 37
 
     defaultConfig {
         applicationId = "com.callvanta.ai"
@@ -32,7 +32,7 @@ kotlin {
 }
 
 dependencies {
-    val composeBom = platform("androidx.compose:compose-bom:2026.09.00")
+    val composeBom = platform("2026.09.00")
     implementation(composeBom)
     androidTestImplementation(composeBom)
 
