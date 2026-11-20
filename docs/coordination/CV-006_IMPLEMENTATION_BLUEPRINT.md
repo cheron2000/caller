@@ -26,7 +26,7 @@ Use pinned, stable tool versions rather than dynamic versions.
 | Gradle | 9.6.0 | Minimum required by AGP 9.5 |
 | JDK | 17 | AGP 9.5 documented runtime requirement |
 | Kotlin | 2.4.21 | Stable Kotlin release |
-| Compose BOM | 2026.09.00 | Stable Compose BOM compatible with API 36 without opting into the newer API 37.1 requirement noted for the November Compose release |
+| Compose BOM | 2026.06.01 | Published stable BOM verified by GitHub Actions with compileSdk 36 |
 | compileSdk | 36 | Stable Android 16 API level |
 | targetSdk | 36 | Align with stable API 36 for initial test build |
 | minSdk | 29 | Android 10 baseline; supports modern call screening behavior and avoids legacy compatibility branches |
@@ -40,7 +40,7 @@ Official references:
 - Compose November release notes: https://developer.android.com/blog/posts/jetpack-compose-november-2026-release
 - Room releases: https://developer.android.com/jetpack/androidx/releases/room
 
-Version note: The November 2026 Compose 1.13 release notes state a requirement for Kotlin 2.2+ and compileSdk 37.1. We deliberately choose the previous stable BOM/API 36 baseline for the first build to avoid depending on a newer Android platform SDK preview requirement. Re-evaluate versions when CI first runs; do not upgrade dependencies merely because a newer release exists.
+Version note: The attempted 2026.07.00 BOM coordinate was not published and failed dependency resolution. The app now uses 2026.06.01, and GitHub Actions run #11 verified debug APK assembly and JVM unit tests with compileSdk 36. Keep this tested baseline until a deliberate dependency upgrade is validated by CI.
 
 ## 3. Package boundaries
 
@@ -113,7 +113,7 @@ Do not create empty abstractions without a first consumer. Add packages when the
 - Never place signing keys, API keys, or credentials in the repository.
 - A debug APK is for testing only; release signing is a separate later task.
 
-The first CI run is the authoritative compatibility check for the selected plugin/toolchain versions. If it fails, fix the compatibility issue and record the actual tested versions.
+The successful GitHub Actions run #11 is the authoritative compatibility check for the selected plugin/toolchain versions.
 
 ## 6. Verification gates
 
@@ -135,4 +135,4 @@ The first CI run is the authoritative compatibility check for the selected plugi
 - Release signing and Play Store publication.
 
 ## 8. Handoff
-CV-006 defines the implementation sequence and pinned toolchain baseline. The next coding task is CV-008 — create the minimal Android app shell and GitHub Actions debug build. CV-007 remains a separate blocker for persistence only; it does not block the app shell, onboarding, or pure policy engine.
+CV-006 defines the implementation sequence and pinned toolchain baseline. CV-008 app shell and remote debug build are complete and CI-verified. CV-009 role onboarding is implemented and awaiting CI verification. CV-007 remains a separate blocker for persistence only; it does not block onboarding or the pure policy engine.
