@@ -42,7 +42,7 @@ class ScreeningPolicyTest {
         val result = policy.evaluate(
             caller,
             listOf(
-                rule("prefix", CallerMatcher.NumberPrefix("+91"), ScreeningAction.SILENCE),
+                rule("prefix", CallerMatcher.NumberPrefix("987654"), ScreeningAction.SILENCE),
                 rule("exact", CallerMatcher.ExactNumber(caller.normalized), ScreeningAction.REJECT)
             )
         )
@@ -55,8 +55,8 @@ class ScreeningPolicyTest {
         val result = policy.evaluate(
             caller,
             listOf(
-                rule("later", CallerMatcher.NumberPrefix("+91"), ScreeningAction.REJECT, creationOrder = 20),
-                rule("earlier", CallerMatcher.NumberPrefix("+91"), ScreeningAction.SILENCE, creationOrder = 10)
+                rule("later", CallerMatcher.NumberPrefix("987654"), ScreeningAction.REJECT, creationOrder = 20),
+                rule("earlier", CallerMatcher.NumberPrefix("987654"), ScreeningAction.SILENCE, creationOrder = 10)
             )
         )
         assertEquals("earlier", result.matchedRuleId)
