@@ -60,8 +60,8 @@ Record approved decisions here. Changes to product behavior, privacy, platform s
 - Decision: Defer `ROLE_DIALER`, `InCallService`, and replacement in-call UI from the first milestone.
 
 ## D-015 — Stored data and retention
-- Status: Accepted direction; exact duration required before persistence ships
-- Decision: Store only minimal observed event metadata and screening result. Do not store call audio or transcripts. Provide per-record and delete-all controls. Retention must be user-configurable with a conservative default; the exact default duration and backup behavior must be recorded before the persistence feature is released.
+- Status: Accepted
+- Decision: Store only minimal observed event metadata and screening result. Do not store call audio or transcripts. Provide per-record and delete-all controls. Automatically delete screening activity after 30 days. Do not add user-configurable retention in the first release; revisit only if needed.
 
 ## D-016 — Contacts permission
 - Status: Accepted
@@ -76,8 +76,8 @@ Record approved decisions here. Changes to product behavior, privacy, platform s
 - Decision: Automated two-way AI answering over ordinary cellular calls is out of scope and NO-GO for the first milestone. Reopen only after a documented, supported, consent-aware receive-and-transmit audio path is demonstrated on the target device and receives project-owner, platform-policy, and legal review.
 
 ## D-019 — Backup and privacy
-- Status: Accepted direction; implementation detail required before persistence ships
-- Decision: Do not include sensitive call metadata in automatic cloud backup by default. Confirm the Android backup/data-extraction configuration when the persistence implementation is designed.
+- Status: Accepted
+- Decision: Do not include sensitive call metadata or screening rules in automatic cloud backup. The Android application backup setting remains disabled (`allowBackup=false`); verify data-extraction rules if backup behavior changes in a future release.
 
 ## D-020 — Target device validation
 - Status: Accepted
@@ -90,3 +90,8 @@ Record approved decisions here. Changes to product behavior, privacy, platform s
 ## D-022 — Direct-to-main workflow
 - Status: Accepted
 - Decision: ChatGPT may make focused, documented commits directly to `main` without opening PRs. This is a workflow choice for the current single-agent setup, not permission to bypass owner approval for product, privacy, legal, or release decisions.
+
+
+## D-023 — Local data retention and backup
+- Status: Accepted
+- Decision: Retain Callvanta-observed screening activity for 30 days, then delete expired events automatically. Keep Android cloud backup disabled. This retention policy applies when event persistence is implemented; no call audio or transcripts may be stored.
