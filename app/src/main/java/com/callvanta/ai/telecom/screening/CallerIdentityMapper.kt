@@ -1,18 +1,17 @@
 package com.callvanta.ai.telecom.screening
 
 import com.callvanta.ai.domain.screening.CallerIdentity
+import com.callvanta.ai.domain.screening.NumberNormalizer
 
 /**
- * Converts only the public handle fields supplied by Telecom.
- *
- * Restricted/withheld presentations are not delivered to third-party screening
- * services by Android. A missing or non-telephone handle is therefore treated
- * as missing metadata, never inferred to be a withheld caller.
+ * Converts only the public telephone handle supplied by Telecom.
+ * Android does not deliver withheld/private presentations to this service.
  */
 internal object CallerIdentityMapper {
     fun fromHandle(scheme: String?, schemeSpecificPart: String?): CallerIdentity {
         if (scheme != "tel") return CallerIdentity.Missing
-        val number = schemeSpecificPart?.trim().orEmpty()
-        return if (number.isBlank()) CallerIdentity.Missing else CallerIdentity.Number(number)
+        val number = schemeSpecificPart?.let(NumberNormalizer::normalizeIncoming)
+            ?: return CallerIdentity.Missing
+        return CallerIdentity.Number(number)
     }
 }
