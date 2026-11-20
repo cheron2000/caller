@@ -6,7 +6,7 @@ import org.junit.Test
 
 class ScreeningPolicyTest {
     private val policy = ScreeningPolicy()
-    private val caller = CallerIdentity.Number("+919876543210")
+    private val caller = CallerIdentity.Number("9876543210")
 
     @Test
     fun `unavailable policy defaults to allow`() {
@@ -30,7 +30,7 @@ class ScreeningPolicyTest {
             caller,
             listOf(
                 rule("exact", CallerMatcher.ExactNumber(caller.normalized), ScreeningAction.REJECT, priority = 1),
-                rule("prefix-high", CallerMatcher.NumberPrefix("+91"), ScreeningAction.SILENCE, priority = 2)
+                rule("prefix-high", CallerMatcher.NumberPrefix("987654"), ScreeningAction.SILENCE, priority = 2)
             )
         )
         assertEquals("prefix-high", result.matchedRuleId)
