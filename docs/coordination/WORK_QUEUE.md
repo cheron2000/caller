@@ -15,7 +15,8 @@ ChatGPT is the sole active AI agent. The project owner retains final authority o
 | CV-009 | Implement capability onboarding and call-screening role state | ChatGPT | Done | main | User-triggered role request and accurate granted/denied/unavailable/revoked UI |
 | CV-010 | Implement and test pure Kotlin screening policy | ChatGPT | Done | main | Deterministic rules and unit tests for approved defaults and edge cases |
 | CV-011 | Implement Android CallScreeningService adapter | ChatGPT | Done | main | Registered service, incoming-only handling, supported responses, fail-open mapping, and CI verification; device test remains outstanding |
-| CV-012 | Implement persistent local screening rules and rule-management UI | ChatGPT | In progress | main | Add/edit/enable/disable/delete rules; persist locally; normalized number matching and safe validation; device test and CI pass |\n| CV-013 | Enable explicit rules for saved contacts | ChatGPT | In progress | main | Request READ_CONTACTS with disclosure; Android delivers saved-contact callbacks after grant; exact/prefix rules are evaluated; verify on Vivo Y39 |
+| CV-012 | Implement persistent local screening rules and rule-management UI | ChatGPT | In progress | main | Add/edit/enable/disable/delete rules; persist locally; normalized number matching and safe validation; device test and CI pass |
+| CV-013 | Enable explicit rules for saved contacts | ChatGPT | In progress | main | Request READ_CONTACTS with disclosure; Android delivers saved-contact callbacks after grant; exact/prefix rules are evaluated; verify on Vivo Y39 |
 
 ## Current handoff
 - Manus CV-001/CV-002 findings, ChatGPT CV-003 review, and owner decisions are preserved on `main`.
