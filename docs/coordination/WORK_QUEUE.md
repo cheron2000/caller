@@ -31,3 +31,13 @@ ChatGPT is the sole active AI agent. The project owner retains final authority o
 
 ## Assignment rule
 Only ChatGPT is active unless the project owner explicitly reactivates another agent. Keep direct commits focused and never claim unperformed verification.
+
+
+| CV-015 | Implement conditional-forwarding voice gateway foundation | ChatGPT | Scaffold committed; CI pending | main | FastAPI health/readiness, token-protected Exotel WebSocket route, event/PCM parser, tests, and backend CI; no live AI pipeline yet |
+| CV-016 | Validate Airtel conditional forwarding to a provider test destination | Project owner + ChatGPT | Blocked on provider test number | main | Confirm Airtel support/charges and test unanswered/busy/unreachable forwarding without touching personal-number routing until explicitly approved |
+
+## AI receptionist handoff
+- Owner selected existing-number conditional forwarding (D-025); carrier identified as Airtel India (D-026).
+- Exotel Voicebot Applet is a candidate only. Account eligibility and Voicebot feature enablement are not confirmed.
+- Backend scaffold is committed under backend/app/. It validates Exotel event frames and PCM payloads but deliberately discards audio. It is not a functioning AI agent and must not receive live forwarded calls.
+- Python backend tests are configured in .github/workflows/backend-ci.yml; wait for the GitHub Actions result before marking the scaffold verified.
