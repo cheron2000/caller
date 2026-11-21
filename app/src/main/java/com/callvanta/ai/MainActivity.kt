@@ -17,7 +17,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.callvanta.ai.data.rules.ScreeningRuleStore
 import com.callvanta.ai.domain.screening.*
+import java.text.DateFormat
+import java.util.Date
 import java.util.UUID
+import com.callvanta.ai.domain.history.ScreeningEvent
 
 private enum class ScreeningRoleState { UNAVAILABLE, NOT_ENABLED, GRANTED, DENIED, REVOKED }
 private enum class RuleType { EXACT, PREFIX }
@@ -26,6 +29,7 @@ class MainActivity : ComponentActivity() {
     private var roleState by mutableStateOf(ScreeningRoleState.NOT_ENABLED)
     private var contactsPermissionGranted by mutableStateOf(false)
     private var rules by mutableStateOf<List<ScreeningRule>>(emptyList())
+    private var events by mutableStateOf<List<ScreeningEvent>>(emptyList())
     private var requestAttempted = false
     private var roleWasGranted = false
     private val ruleStore by lazy { ScreeningRuleStore(applicationContext) }
@@ -39,17 +43,32 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         rules = ruleStore.loadRules()
+        events = (application as CallvantaApplication).screeningEventsSnapshot()
         CallvantaApplication.replaceRules(rules)
         refreshRoleState()
         refreshContactsPermission()
         setContent {
             MaterialTheme {
-                CallvantaHome(roleState, contactsPermissionGranted, rules, ::requestScreeningRole, ::requestContactsPermission, ::saveRule, ::toggleRule, ::deleteRule)
+                CallvantaHome(roleState, contactsPermissionGranted, rules, events, ::requestScreeningRole, ::requestContactsPermission, ::saveRule, ::toggleRule, ::deleteRule, ::deleteEvent, ::deleteAllEvents)
             }
         }
     }
 
-    override fun onResume() { super.onResume(); refreshRoleState(); refreshContactsPermission() }
+    override fun onResume() { super.onResume(); refreshRoleState(); refreshContactsPermission(); refreshEvents() }
+
+    private fun refreshEvents() {
+        events = (application as CallvantaApplication).screeningEventsSnapshot()
+    }
+
+    private fun deleteEvent(id: String) {
+        (application as CallvantaApplication).deleteScreeningEvent(id)
+        refreshEvents()
+    }
+
+    private fun deleteAllEvents() {
+        (application as CallvantaApplication).deleteAllScreeningEvents()
+        refreshEvents()
+    }
 
     private fun refreshContactsPermission() {
         contactsPermissionGranted = checkSelfPermission(Manifest.permission.READ_CONTACTS) == PackageManager.PERMISSION_GRANTED
@@ -122,17 +141,21 @@ private fun CallvantaHome(
     roleState: ScreeningRoleState,
     contactsPermissionGranted: Boolean,
     rules: List<ScreeningRule>,
+    events: List<ScreeningEvent>,
     onEnableScreening: () -> Unit,
     onEnableContacts: () -> Unit,
     onSaveRule: (String?, RuleType, String, ScreeningAction) -> String?,
     onToggleRule: (String, Boolean) -> Unit,
-    onDeleteRule: (String) -> Unit
+    onDeleteRule: (String) -> Unit,
+    onDeleteEvent: (String) -> Unit,
+    onDeleteAllEvents: () -> Unit
 ) {
     var selectedId by remember { mutableStateOf<String?>(null) }
     var ruleType by remember { mutableStateOf(RuleType.EXACT) }
     var number by remember { mutableStateOf("") }
     var action by remember { mutableStateOf(ScreeningAction.ALLOW) }
     var validation by remember { mutableStateOf<String?>(null) }
+    var confirmClearHistory by remember { mutableStateOf(false) }
 
     val status = when (roleState) {
         ScreeningRoleState.UNAVAILABLE -> "Call screening is unavailable on this device."
@@ -260,6 +283,52 @@ private fun CallvantaHome(
                         }
                     }
                 }
+            }
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Text("Screening history (${events.size})", style = MaterialTheme.typography.titleLarge, modifier = Modifier.weight(1f))
+                if (events.isNotEmpty()) {
+                    TextButton(onClick = { confirmClearHistory = true }) { Text("Clear all") }
+                }
+            }
+            Text(
+                "Only incoming calls delivered to Callvanta's screening service appear here. This is not your device's full call history.",
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant
+            )
+            if (events.isEmpty()) {
+                Text("No screened calls recorded yet.")
+            } else {
+                events.forEach { event ->
+                    Card {
+                        Column(Modifier.fillMaxWidth().padding(12.dp), verticalArrangement = Arrangement.spacedBy(5.dp)) {
+                            Text(event.callerNumber ?: "Caller ID unavailable", style = MaterialTheme.typography.titleMedium)
+                            Text("Action: ${event.action.label()}")
+                            Text(
+                                DateFormat.getDateTimeInstance(DateFormat.MEDIUM, DateFormat.SHORT)
+                                    .format(Date(event.occurredAtEpochMillis)),
+                                style = MaterialTheme.typography.bodySmall,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant
+                            )
+                            TextButton(onClick = { onDeleteEvent(event.id) }) { Text("Delete") }
+                        }
+                    }
+                }
+            }
+            if (confirmClearHistory) {
+                AlertDialog(
+                    onDismissRequest = { confirmClearHistory = false },
+                    title = { Text("Delete screening history?") },
+                    text = { Text("This permanently deletes all Callvanta screening events stored on this device.") },
+                    confirmButton = {
+                        TextButton(onClick = {
+                            onDeleteAllEvents()
+                            confirmClearHistory = false
+                        }) { Text("Delete all") }
+                    },
+                    dismissButton = {
+                        TextButton(onClick = { confirmClearHistory = false }) { Text("Cancel") }
+                    }
+                )
             }
             Text(
                 "No call audio is accessed. Screening is local. Event retention policy: 30 days; cloud backup is disabled.",
