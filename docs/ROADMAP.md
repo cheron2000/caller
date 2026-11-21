@@ -77,3 +77,11 @@ The roadmap delivers supported functionality without depending on an unverified 
 
 **Exit condition:** a real forwarded call to a test number is answered by the AI, supports two-way conversation with acceptable latency, handles failure safely, and passes privacy/security review. No personal-number forwarding until the owner explicitly approves the live test.
 
+
+
+### Airtel carrier notes (validated at planning level)
+
+- Carrier identified by project owner: Airtel India.
+- Airtel's public guidance describes conditional forwarding for busy, unanswered, and unreachable states and shows management through Airtel Thanks / call settings.
+- Use the app/settings route rather than blindly dialling forwarding codes. The Department of Telecommunications ordered suspension of USSD-based call forwarding from 15 April 2024 until further notice; the order specifically cites the commonly misused `*401#` facility. Confirm current availability and charges with Airtel for the subscriber's exact plan.
+- No forwarding is to be activated yet. First obtain an Exotel test destination and complete the voice pipeline; then validate forwarding to that test number only.
