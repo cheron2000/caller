@@ -1,6 +1,10 @@
 package com.callvanta.ai
 
 import android.app.Application
+import androidx.work.ExistingPeriodicWorkPolicy
+import androidx.work.PeriodicWorkRequestBuilder
+import androidx.work.WorkManager
+import com.callvanta.ai.data.history.ScreeningEventCleanupWorker
 import com.callvanta.ai.data.history.ScreeningEventStore
 import com.callvanta.ai.data.rules.ScreeningRuleStore
 import com.callvanta.ai.domain.history.ScreeningEvent
@@ -9,6 +13,7 @@ import com.callvanta.ai.domain.screening.ScreeningRule
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
 import java.util.concurrent.atomic.AtomicReference
+import java.util.concurrent.TimeUnit
 
 class CallvantaApplication : Application() {
     private lateinit var eventStore: ScreeningEventStore
@@ -20,6 +25,10 @@ class CallvantaApplication : Application() {
         eventStore = ScreeningEventStore(this)
         eventSnapshot.set(eventStore.loadEvents())
         eventWriter = Executors.newSingleThreadExecutor()
+        val cleanup = PeriodicWorkRequestBuilder<ScreeningEventCleanupWorker>(1, TimeUnit.DAYS).build()
+        WorkManager.getInstance(this).enqueueUniquePeriodicWork(
+            EVENT_CLEANUP_WORK, ExistingPeriodicWorkPolicy.KEEP, cleanup
+        )
     }
 
     fun screeningEventsSnapshot(): List<ScreeningEvent> = eventSnapshot.get()
@@ -45,6 +54,7 @@ class CallvantaApplication : Application() {
     companion object {
         private val ruleSnapshot = AtomicReference<List<ScreeningRule>>(emptyList())
         private val eventSnapshot = AtomicReference<List<ScreeningEvent>>(emptyList())
+        private const val EVENT_CLEANUP_WORK = "callvanta_screening_event_cleanup"
 
         fun rulesSnapshot(): List<ScreeningRule> = ruleSnapshot.get()
 
