@@ -60,3 +60,20 @@ The roadmap delivers supported functionality without depending on an unverified 
 - Call audio recording, transcription, or transcript storage.
 - Backend/LLM dependency for call screening.
 - Full device call-history replacement.
+
+
+## Phase 3 — Conditional-forwarding AI receptionist (new active direction)
+
+- [ ] Confirm user's mobile carrier and whether conditional forwarding to an external Indian number is supported on their plan.
+- [ ] Validate a cloud telephony provider account and destination number suitable for forwarded calls.
+- [ ] Run a provider media proof-of-concept using documented bidirectional audio streaming; Exotel Voicebot Applet is the first candidate, subject to account enablement.
+- [ ] Define the provider-neutral telephony adapter and call-session lifecycle.
+- [ ] Build a Python + FastAPI voice gateway with authenticated WebSocket media handling.
+- [ ] Integrate streaming speech-to-text, conversation orchestration, LLM, and streaming text-to-speech.
+- [ ] Add AI identity/privacy disclosure, consent handling where required, caller-requested exit, escalation, and failure fallback.
+- [ ] Add Android service configuration, readiness status, call metadata, and user-controlled deletion.
+- [ ] Test end-to-end using a test number before enabling conditional forwarding on the user's personal number.
+- [ ] Document carrier-specific activation/deactivation and charges only after the user's operator is confirmed.
+
+**Exit condition:** a real forwarded call to a test number is answered by the AI, supports two-way conversation with acceptable latency, handles failure safely, and passes privacy/security review. No personal-number forwarding until the owner explicitly approves the live test.
+
