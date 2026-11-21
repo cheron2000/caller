@@ -1,6 +1,8 @@
 package com.callvanta.ai
 
+import android.Manifest
 import android.app.role.RoleManager
+import android.content.pm.PackageManager
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -22,6 +24,7 @@ private enum class RuleType { EXACT, PREFIX }
 
 class MainActivity : ComponentActivity() {
     private var roleState by mutableStateOf(ScreeningRoleState.NOT_ENABLED)
+    private var contactsPermissionGranted by mutableStateOf(false)
     private var rules by mutableStateOf<List<ScreeningRule>>(emptyList())
     private var requestAttempted = false
     private var roleWasGranted = false
@@ -29,20 +32,32 @@ class MainActivity : ComponentActivity() {
     private val roleRequest = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
         refreshRoleState()
     }
+    private val contactsPermissionRequest = registerForActivityResult(ActivityResultContracts.RequestPermission()) { granted ->
+        contactsPermissionGranted = granted
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         rules = ruleStore.loadRules()
         CallvantaApplication.replaceRules(rules)
         refreshRoleState()
+        refreshContactsPermission()
         setContent {
             MaterialTheme {
-                CallvantaHome(roleState, rules, ::requestScreeningRole, ::saveRule, ::toggleRule, ::deleteRule)
+                CallvantaHome(roleState, contactsPermissionGranted, rules, ::requestScreeningRole, ::requestContactsPermission, ::saveRule, ::toggleRule, ::deleteRule)
             }
         }
     }
 
-    override fun onResume() { super.onResume(); refreshRoleState() }
+    override fun onResume() { super.onResume(); refreshRoleState(); refreshContactsPermission() }
+
+    private fun refreshContactsPermission() {
+        contactsPermissionGranted = checkSelfPermission(Manifest.permission.READ_CONTACTS) == PackageManager.PERMISSION_GRANTED
+    }
+
+    private fun requestContactsPermission() {
+        contactsPermissionRequest.launch(Manifest.permission.READ_CONTACTS)
+    }
 
     private fun saveRule(existingId: String?, type: RuleType, value: String, action: ScreeningAction): String? {
         val normalized = when (type) {
@@ -105,8 +120,10 @@ class MainActivity : ComponentActivity() {
 @Composable
 private fun CallvantaHome(
     roleState: ScreeningRoleState,
+    contactsPermissionGranted: Boolean,
     rules: List<ScreeningRule>,
     onEnableScreening: () -> Unit,
+    onEnableContacts: () -> Unit,
     onSaveRule: (String?, RuleType, String, ScreeningAction) -> String?,
     onToggleRule: (String, Boolean) -> Unit,
     onDeleteRule: (String) -> Unit
@@ -143,9 +160,27 @@ private fun CallvantaHome(
             }
             Text("Screening rules", style = MaterialTheme.typography.titleLarge)
             Text("Rules stay on this device. If no rule matches, the call is allowed.")
+            Card {
+                Column(Modifier.fillMaxWidth().padding(14.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                    Text(if (contactsPermissionGranted) "Contact screening enabled" else "Enable rules for saved contacts")
+                    Text(
+                        if (contactsPermissionGranted)
+                            "Callvanta has contacts permission. Android can now deliver saved-contact calls to the screening service, so your exact-number and prefix rules can be applied."
+                        else
+                            "Android does not send saved-contact calls to Callvanta until you grant Contacts permission. Without it, rules for saved contacts cannot run."
+                    )
+                    if (!contactsPermissionGranted) {
+                        Button(onClick = onEnableContacts) { Text("Allow contact access") }
+                    }
+                    Text(
+                        "Callvanta uses this permission to let Android deliver saved-contact calls for local rule matching. It does not upload or store your contacts.",
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                }
+            }
             Text(
-                "Android currently delivers screening callbacks only for numbers outside your contacts. " +
-                    "Saved-contact calls, withheld/private IDs, unknown presentations and payphones cannot be matched by this version.",
+                "Android still does not deliver calls with restricted, unknown, unavailable or payphone caller-ID presentation to third-party screening services.",
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant
             )
