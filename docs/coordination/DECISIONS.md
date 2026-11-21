@@ -109,3 +109,10 @@ Record approved decisions here. Changes to product behavior, privacy, platform s
 - Provider status: Exotel is the first provider candidate for technical validation because its Voicebot Applet documents bidirectional WebSocket media. Do not treat Exotel as selected/contracted until account eligibility, number/forwarding compatibility, feature enablement, pricing, and applicable Indian telecom requirements are confirmed.
 - Safety and privacy: The AI must identify itself as an AI assistant at the start of the call, disclose AI processing/recording or transcription as applicable, obtain consent where required, minimize retained content, and provide a human/voicemail fallback where configured.
 - Limitation: Carrier forwarding availability, activation method, charges, caller-ID presentation, and forwarding behavior must be verified for the user's specific operator and plan before setup instructions are issued.
+
+
+## D-026 — Initial carrier for forwarding feasibility
+- Status: Accepted for implementation planning
+- Decision: The owner's existing SIM carrier is Airtel India. Use Airtel's supported app/handset settings or customer-care route to investigate conditional forwarding for unanswered, busy, and unreachable states. Do not enable unconditional forwarding by default.
+- Safety: Do not instruct the owner to dial forwarding codes copied from third-party sources. Do not activate forwarding until a working provider test destination exists and the owner explicitly approves a test. Confirm the exact plan's support, destination eligibility, and charges with Airtel.
+- Reference: Airtel's public guidance describes conditional forwarding and Airtel Thanks/call-settings management. DoT's 28 March 2024 order directed suspension of USSD-based call forwarding from 15 April 2024 until further notice.
