@@ -44,8 +44,8 @@ Record approved decisions here. Changes to product behavior, privacy, platform s
 - Decision: Rule evaluation must be deterministic. Use explicit priority, then most-specific match, then stable creation order as tie-breakers. The rule engine must be independently unit-testable.
 
 ## D-011 — Saved contacts
-- Status: Accepted
-- Decision: Saved contacts are allowed by default and are not screened by default. Contact matching is deferred until a clearly explained, separately approved contacts integration and permission strategy exists.
+- Status: Superseded by D-024
+- Decision: Saved contacts remain allowed by default when no explicit rule matches. If the user creates an exact-number or prefix rule for a saved contact, that explicit rule must be evaluated and applied after the user grants Contacts permission. Do not silently bypass a matching rule because the caller is saved.
 
 ## D-012 — Withheld and unknown caller ID
 - Status: Accepted
@@ -64,8 +64,8 @@ Record approved decisions here. Changes to product behavior, privacy, platform s
 - Decision: Store only minimal observed event metadata and screening result. Do not store call audio or transcripts. Provide per-record and delete-all controls. Automatically delete screening activity after 30 days. Do not add user-configurable retention in the first release; revisit only if needed.
 
 ## D-016 — Contacts permission
-- Status: Accepted
-- Decision: Defer contacts permission and contact lookup until a separate contacts feature is approved.
+- Status: Superseded by D-024
+- Decision: Request the Android READ_CONTACTS runtime permission with a clear explanation. This permission is required for Android to deliver saved-contact calls to Callvanta's CallScreeningService. Use it only to enable screening callbacks and local rule matching; do not upload or persist the user's address book.
 
 ## D-017 — AI and backend
 - Status: Accepted
@@ -95,3 +95,8 @@ Record approved decisions here. Changes to product behavior, privacy, platform s
 ## D-023 — Local data retention and backup
 - Status: Accepted
 - Decision: Retain Callvanta-observed screening activity for 30 days, then delete expired events automatically. Keep Android cloud backup disabled. This retention policy applies when event persistence is implemented; no call audio or transcripts may be stored.
+
+
+## D-024 — Apply explicit rules to saved contacts
+- Status: Accepted
+- Decision: Saved-contact calls must be eligible for exact-number and prefix rules. Add the READ_CONTACTS manifest declaration and a user-triggered runtime permission request with clear disclosure. Without permission, clearly explain that Android will not deliver saved-contact calls; do not claim that rules can screen them. Saved contacts remain allowed by default only when no explicit rule matches. Restricted/unknown/unavailable/payphone presentations remain outside the supported screening callback contract.
