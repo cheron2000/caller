@@ -16,7 +16,7 @@ ChatGPT is the sole active AI agent. The project owner retains final authority o
 | CV-010 | Implement and test pure Kotlin screening policy | ChatGPT | Done | main | Deterministic rules and unit tests for approved defaults and edge cases |
 | CV-011 | Implement Android CallScreeningService adapter | ChatGPT | Done | main | Registered service, incoming-only handling, supported responses, fail-open mapping, and CI verification; device test remains outstanding |
 | CV-012 | Implement persistent local screening rules and rule-management UI | ChatGPT | In progress | main | Add/edit/enable/disable/delete rules; persist locally; normalized number matching and safe validation; device test and CI pass |
-| CV-013 | Enable explicit rules for saved contacts | ChatGPT | In progress | main | Request READ_CONTACTS with disclosure; Android delivers saved-contact callbacks after grant; exact/prefix rules are evaluated; verify on Vivo Y39 |
+| CV-013 | Enable explicit rules for saved contacts | ChatGPT | Device verified | main | Request READ_CONTACTS with disclosure; Android delivers saved-contact callbacks after grant; exact/prefix rules are evaluated; user confirmed working on Vivo Y39 |\n| CV-014 | Implement local screening event history | ChatGPT | In progress | main | Record only observed incoming screening callbacks after responding; minimal metadata; 30-day automatic expiry; per-event and clear-all deletion; retention tests and CI pass |
 
 ## Current handoff
 - Manus CV-001/CV-002 findings, ChatGPT CV-003 review, and owner decisions are preserved on `main`.
@@ -27,7 +27,7 @@ ChatGPT is the sole active AI agent. The project owner retains final authority o
 - CV-007 is resolved: the owner approved 30-day event retention and disabled cloud backup (D-023). The retention rule applies when screening-event persistence is added; no audio or transcripts are stored.
 - CV-012 is in progress: persistent local rules use a preloaded in-memory snapshot. Number normalization, prefix validation, safer Allow default, and unsupported-category UI warnings are now implemented; verify CI and test an unsaved caller on the Vivo Y39.
 - Android does not deliver saved-contact calls without `READ_CONTACTS`, nor restricted/unknown/unavailable/payphone presentations to third-party screening services. D-024 approves a user-triggered contacts permission request so explicit rules can apply to saved contacts.
-- The user's first device test confirmed the role is enabled and the call rang normally. This is consistent with the current empty-rule implementation; it does not yet verify rule-based silence/rejection.
+- The project owner confirmed saved-contact screening rules now work on the Vivo Y39 after granting Contacts permission.\n- CV-014 adds local screening history. Events are queued for persistence only after `respondToCall` has sent the Telecom response; the callback does not wait for storage.
 
 ## Assignment rule
 Only ChatGPT is active unless the project owner explicitly reactivates another agent. Keep direct commits focused and never claim unperformed verification.
