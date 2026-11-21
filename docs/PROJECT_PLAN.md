@@ -98,3 +98,31 @@ The exact Android version, Vivo Funtouch OS version, default-dialer behavior, an
 ## 10. Product decision
 
 The project must not equate call screening with answering a call. These are separate capabilities with different Android APIs and constraints. MVP planning should proceed with screening and call records while AI voice answering remains conditional on a successful feasibility test.
+
+
+## 11. Updated product direction — existing-number AI receptionist
+
+The project owner selected conditional forwarding from the existing SIM number as the route to AI call handling.
+
+### Intended behavior
+
+- Keep the user's existing mobile number as the public contact number.
+- Let the phone ring normally first.
+- Forward unanswered, busy, and unreachable calls to a cloud AI receptionist, only for conditions supported by the user's carrier and plan.
+- The cloud telephony provider bridges the forwarded call to a Callvanta backend over a documented bidirectional media interface.
+- The AI identifies itself, explains AI processing, understands the caller's purpose, and collects only configured information.
+- The Android app provides setup, service status, preferences, call metadata, and summaries; it does not access cellular call audio directly.
+
+### Initial provider evaluation
+
+Exotel is the first candidate because its Voicebot Applet documents bidirectional WebSocket media. This is a candidate for a proof-of-concept, not a final provider commitment. Confirm account eligibility, feature enablement, number support, pricing, forwarding compatibility, security requirements, and applicable Indian telecom requirements before selecting it.
+
+### Release gates
+
+1. Prove two-way audio on a provider test number.
+2. Validate streaming STT/LLM/TTS latency and interruption handling.
+3. Implement AI identity and privacy disclosures, consent handling where required, data minimization, and safe failure routing.
+4. Test carrier forwarding with a separate test destination.
+5. Obtain explicit owner approval before enabling forwarding from the owner's personal SIM number.
+
+The app must not silently activate call forwarding or change carrier settings. Carrier forwarding is controlled by the user and carrier.
