@@ -100,3 +100,12 @@ Record approved decisions here. Changes to product behavior, privacy, platform s
 ## D-024 — Apply explicit rules to saved contacts
 - Status: Accepted
 - Decision: Saved-contact calls must be eligible for exact-number and prefix rules. Add the READ_CONTACTS manifest declaration and a user-triggered runtime permission request with clear disclosure. Without permission, clearly explain that Android will not deliver saved-contact calls; do not claim that rules can screen them. Saved contacts remain allowed by default only when no explicit rule matches. Restricted/unknown/unavailable/payphone presentations remain outside the supported screening callback contract.
+
+
+## D-025 — Existing-number AI receptionist routing
+- Status: Accepted
+- Decision: The product direction is conditional forwarding from the user's existing SIM/mobile number to a cloud-hosted Callvanta AI receptionist. The user's existing number remains the public number. Initial forwarding conditions are unanswered, busy, and unreachable where the carrier supports them; unconditional forwarding is not the default.
+- Architecture: The carrier forwards the call to a telephony provider that exposes a documented bidirectional media interface to Callvanta's backend. Android remains the configuration and call-history client; it is not the cellular audio bridge.
+- Provider status: Exotel is the first provider candidate for technical validation because its Voicebot Applet documents bidirectional WebSocket media. Do not treat Exotel as selected/contracted until account eligibility, number/forwarding compatibility, feature enablement, pricing, and applicable Indian telecom requirements are confirmed.
+- Safety and privacy: The AI must identify itself as an AI assistant at the start of the call, disclose AI processing/recording or transcription as applicable, obtain consent where required, minimize retained content, and provide a human/voicemail fallback where configured.
+- Limitation: Carrier forwarding availability, activation method, charges, caller-ID presentation, and forwarding behavior must be verified for the user's specific operator and plan before setup instructions are issued.
